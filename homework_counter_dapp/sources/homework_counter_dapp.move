@@ -1,6 +1,7 @@
 module homework_counter_dapp::homework_counter_dapp;
 
 use sui::event;
+const ENotOwner: u64 = 1;
 
 public struct Counter has key {
   id: UID,
@@ -46,6 +47,12 @@ public fun create_counter(ctx: &mut TxContext) {
 }
 
 public fun increment(counter: &mut Counter, ctx: &TxContext) {
+  let caller = tx_context::sender(ctx);
+
+  if (counter.owner != caller) {
+    abort ENotOwner
+  };
+
   let old_value = counter.value;
   counter.value = counter.value + 1;
 
